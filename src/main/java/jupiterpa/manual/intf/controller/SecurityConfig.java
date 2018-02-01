@@ -1,4 +1,4 @@
-package jupiterpa.template.intf.controller;
+package jupiterpa.manual.intf.controller;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,7 +16,7 @@ public class SecurityConfig extends BaseSecurityConfig {
 		super.configure(http);
 		http.authorizeRequests()
 			.antMatchers(HttpMethod.GET,  Controller.PATH+"/**" ).hasAnyRole("USER","ADMIN")
-			.antMatchers(HttpMethod.PUT,  Controller.PATH+"/**" ).hasRole("ADMIN")
+			.antMatchers(HttpMethod.PUT,  Controller.PATH+"/**" ).hasAnyRole("USER","ADMIN")
 			.antMatchers(HttpMethod.POST, Controller.PATH+"/**" ).hasRole("ADMIN")
 			.anyRequest().permitAll();
 	}
