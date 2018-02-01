@@ -1,0 +1,41 @@
+# application.yml
+
+application:
+    name: manual
+    description: Manual / Automatic Management of LED
+    version: 1.0.0  
+    userPassword: password
+    adminPassword: password          
+
+server:
+    port: 9979
+management:
+    port: 8979
+
+clients:
+    - name: ledStripClient
+      host: localhost
+      port: 9000
+
+endpoints:
+    sensitive: false
+    enabled: true
+    health:
+        sensitive: false
+management.security.enabled: false 
+    
+spring:
+    data:
+        mongodb:
+            host: 127.0.0.1
+            port: 27017
+            database: manual
+    
+---    
+spring:
+    profiles: test
+    data:
+        mongodb:
+            host: 127.0.0.1
+            port: 27017
+            database: manual_test    
