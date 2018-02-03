@@ -32,7 +32,16 @@ public class Controller {
         @ApiResponse(code = 200, message = "Action triggered")
     })
     public Action trigger(@PathVariable String name) {
-    	return service.action(name,false);
+    	return service.action(name,1);
+    }
+
+    @PutMapping("/untrigger/{name}")
+    @ApiOperation(value = "Trigger status change for action")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Action untriggered")
+    })
+    public Action untrigger(@PathVariable String name) {
+    	return service.action(name,-1);
     }
 
     @PostMapping("/reset/{name}")
@@ -41,7 +50,7 @@ public class Controller {
         @ApiResponse(code = 200, message = "Status resetted")
     })
     public Action reset(@PathVariable String name) {
-    	return service.action(name,true);
+    	return service.action(name,0);
     }
 
 }

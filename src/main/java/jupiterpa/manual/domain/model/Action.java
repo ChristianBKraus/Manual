@@ -27,8 +27,10 @@ public class Action {
 	public void reset() {
 		status = 0;
 	}
-	public int trigger() {
-		status += 1;
+	public int trigger(int inc) {
+		status += inc;
+		if (status < 0)
+			status = 0;
 		return status;
 	}
 	

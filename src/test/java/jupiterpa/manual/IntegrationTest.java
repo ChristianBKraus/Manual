@@ -1,5 +1,6 @@
 package jupiterpa.manual;
 
+import static org.junit.Assert.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -26,7 +27,7 @@ import jupiterpa.manual.intf.controller.Controller;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@WithMockUser(roles="ADMIN")
+@WithMockUser(roles="ADMIN", username="user")
 @ActiveProfiles({"mock","test"})
 public class IntegrationTest { 
 	final String PATH = Controller.PATH; 
@@ -47,15 +48,17 @@ public class IntegrationTest {
 	}
     
     @Test
-    public void test() throws Exception {
+    public void createAndGet() throws Exception {
+    	String id = Action.HINWEIS_INES;
+    	
         ClientMocking mock = (ClientMocking) client;
         mock.inject(new ArrayList<LED>());
 
-//      Post
-    	mockMvc.perform( put( PATH +"/trigger/" + Action.HINWEIS_INES) )
+//      Create / Change
+    	mockMvc.perform( put( PATH +"/trigger/" + id) )
         .andExpect(status().isOk())
 		.andExpect(content().contentType(APPLICATION_JSON_UTF8))
-        .andExpect(jsonPath("$.id").value(Action.HINWEIS_INES))
+        .andExpect(jsonPath("$.id").value(id))
         .andExpect(jsonPath("$.status").value(1))
         ;
     	
@@ -63,7 +66,164 @@ public class IntegrationTest {
     	mockMvc.perform( get(PATH) )
         .andExpect(status().isOk())
 		.andExpect(content().contentType(APPLICATION_JSON_UTF8))
-        .andExpect(jsonPath("$[0].id").value(Action.HINWEIS_INES));
+        .andExpect(jsonPath("$[0].id").value(id))
+        .andExpect(jsonPath("$[0].status").value(1))
+        ;
     	
+//      Client
+    	ArrayList<LED> leds = (ArrayList<LED>) mock.getState();
+    	assertEquals(1,leds.size());
+    	
+    }
+    
+    @Test
+    public void triggerGetUntriggerGet() throws Exception {
+    	String id = Action.HINWEIS_JONATHAN;
+    	
+        ClientMocking mock = (ClientMocking) client;
+        mock.inject(new ArrayList<LED>());
+
+//      Trigger
+    	mockMvc.perform( put( PATH +"/trigger/" + id) )
+        .andExpect(status().isOk())
+		.andExpect(content().contentType(APPLICATION_JSON_UTF8))
+        .andExpect(jsonPath("$.id").value(id))
+        .andExpect(jsonPath("$.status").value(1))
+        ;
+    	
+//      Get
+    	mockMvc.perform( get(PATH) )
+        .andExpect(status().isOk())
+		.andExpect(content().contentType(APPLICATION_JSON_UTF8))
+        .andExpect(jsonPath("$[0].id").value(id))
+        .andExpect(jsonPath("$[0].status").value(1))
+        ;
+
+//      UnTrigger
+    	mockMvc.perform( put( PATH +"/untrigger/" + id) )
+        .andExpect(status().isOk())
+		.andExpect(content().contentType(APPLICATION_JSON_UTF8))
+        .andExpect(jsonPath("$.id").value(id))
+        .andExpect(jsonPath("$.status").value(0))
+        ;
+    	
+//      Get
+    	mockMvc.perform( get(PATH) )
+        .andExpect(status().isOk())
+		.andExpect(content().contentType(APPLICATION_JSON_UTF8))
+        .andExpect(jsonPath("$[0].id").value(id))
+        .andExpect(jsonPath("$[0].status").value(0))
+        ;
+    }
+    
+    @Test
+    public void triggerTriggerReset() throws Exception {
+    	String id = Action.TASCHENGELD_INES;
+    	
+        ClientMocking mock = (ClientMocking) client;
+        mock.inject(new ArrayList<LED>());
+
+//      Trigger
+    	mockMvc.perform( put( PATH +"/trigger/" + id) )
+        .andExpect(status().isOk())
+		.andExpect(content().contentType(APPLICATION_JSON_UTF8))
+        .andExpect(jsonPath("$.id").value(id))
+        .andExpect(jsonPath("$.status").value(1))
+        ;
+    	
+//      Trigger
+    	mockMvc.perform( put( PATH +"/trigger/" + id) )
+        .andExpect(status().isOk())
+		.andExpect(content().contentType(APPLICATION_JSON_UTF8))
+        .andExpect(jsonPath("$.id").value(id))
+        .andExpect(jsonPath("$.status").value(2))
+        ;
+    	
+//      Get
+    	mockMvc.perform( get(PATH) )
+        .andExpect(status().isOk())
+		.andExpect(content().contentType(APPLICATION_JSON_UTF8))
+        .andExpect(jsonPath("$[0].id").value(id))
+        .andExpect(jsonPath("$[0].status").value(2))
+        ;
+
+//      Reset
+    	mockMvc.perform( post( PATH +"/reset/" + id) )
+        .andExpect(status().isOk())
+		.andExpect(content().contentType(APPLICATION_JSON_UTF8))
+        .andExpect(jsonPath("$.id").value(id))
+        .andExpect(jsonPath("$.status").value(0))
+        ;
+    	
+//      Get
+    	mockMvc.perform( get(PATH) )
+        .andExpect(status().isOk())
+		.andExpect(content().contentType(APPLICATION_JSON_UTF8))
+        .andExpect(jsonPath("$[0].id").value(id))
+        .andExpect(jsonPath("$[0].status").value(0))
+        ;
+    }
+    @Test
+    @WithMockUser(roles = "Nothing")
+    public void securityNone() throws Exception {
+    	String id = Action.VERBOT_INES;
+    	
+//      GET
+    	mockMvc.perform( get( PATH ) )
+        .andExpect(status().isForbidden());
+
+//      PUT /trigger
+    	mockMvc.perform( put( PATH + "/trigger/" + id) )
+        .andExpect(status().isForbidden());
+
+//      PUT /untrigger
+    	mockMvc.perform( put( PATH + "/untrigger/" + id) )
+        .andExpect(status().isForbidden());
+
+//      POST
+    	mockMvc.perform( post( PATH + "/reset/" + id) )
+        .andExpect(status().isForbidden());
+    }
+    @Test
+    @WithMockUser(roles = "USER")
+    public void securityUser() throws Exception {
+    	String id = Action.VERBOT_INES;
+    	
+//      GET
+    	mockMvc.perform( get( PATH ) )
+        .andExpect(status().isOk());
+
+//      PUT /trigger
+    	mockMvc.perform( put( PATH + "/trigger/" + id) )
+        .andExpect(status().isOk());
+
+//      PUT /untrigger
+    	mockMvc.perform( put( PATH + "/untrigger/" + id) )
+        .andExpect(status().isOk());
+
+//      POST
+    	mockMvc.perform( post( PATH + "/reset/" + id) )
+        .andExpect(status().isForbidden());
+    }
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    public void securityAdmin() throws Exception {
+    	String id = Action.VERBOT_INES;
+    	
+//      GET
+    	mockMvc.perform( get( PATH ) )
+        .andExpect(status().isOk());
+
+//      PUT /trigger
+    	mockMvc.perform( put( PATH + "/trigger/" + id) )
+        .andExpect(status().isOk());
+
+//      PUT /untrigger
+    	mockMvc.perform( put( PATH + "/untrigger/" + id) )
+        .andExpect(status().isOk());
+
+//      POST
+    	mockMvc.perform( post( PATH + "/reset/" + id) )
+        .andExpect(status().isOk());
     }
 }

@@ -9,12 +9,14 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import jupiterpa.infrastructure.config.ApplicationConfig;
 
 @EnableCircuitBreaker
 @EnableScheduling
+@Profile("!standalone")
 @SpringBootApplication(scanBasePackages="jupiterpa")
 public class Application implements CommandLineRunner {
 	

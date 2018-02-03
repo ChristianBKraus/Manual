@@ -27,10 +27,5 @@ public class LEDStripClientImpl extends ClientBase<LED> implements LEDStripClien
 	public boolean defaultSet(LED led) {
 		logger.warn(TECHNICAL, "SET LEDStrip failed");
 		return false;
-	}
-	
-	public LED getLed(int row, int column) {
-		return get("ledStrip","/ledstrip/"+row+"/"+column,LED.class);
-	}
-
+	}	
 }

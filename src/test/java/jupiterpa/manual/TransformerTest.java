@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles({"mock","test"})
+@ActiveProfiles({"mock","test","standalone"})
 public class TransformerTest { 
 	@Test
     public void test() throws Exception {
