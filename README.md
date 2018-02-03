@@ -1,2 +1,2 @@
-# Template Service
-Showcase how to setup a simple service. Is based on the SDK.
+# Manual / Automatic Service
+Manual and Automtic (Scheduled) Services for LEDStrip
