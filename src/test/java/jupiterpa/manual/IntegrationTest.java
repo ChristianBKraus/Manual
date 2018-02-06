@@ -19,16 +19,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jupiterpa.manual.client.ClientMocking;
 import jupiterpa.manual.domain.client.*;
 import jupiterpa.manual.domain.model.*;
 import jupiterpa.manual.intf.controller.Controller;
+import jupiterpa.manual.mock.ClientMocking;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 @WithMockUser(roles="ADMIN", username="user")
-@ActiveProfiles({"mock","test"})
+@ActiveProfiles({"mock"})
 public class IntegrationTest { 
 	final String PATH = Controller.PATH; 
 

@@ -23,6 +23,8 @@ public class ActionService {
 	ActionRepo repo;
 	@Autowired 
 	InterfaceHealth health;
+	@Autowired
+	TaskExecutor executor;
 
 // Taschengeld:
 //  +: Scheduled at Sunday
@@ -90,29 +92,9 @@ public class ActionService {
 		action(Action.HINWEIS_JONATHAN, 10);
 		if (duration == 0)
 			duration = 1000 * 60 * 60 * 3; // 3 Stunden
-		schedule(new ActionChange(Action.HINWEIS_JONATHAN, -10, this), duration ); // of 3 hours later
+	    executor.schedule(new Task(Action.HINWEIS_JONATHAN, -10), duration ); // of 3 hours later
 		logger.info(TECHNICAL, "Setting Eislauf Jonathan done");
 		
 	}
-	
-	private class ActionChange implements Runnable {
-		String action;
-		int    value;
-		ActionService service;
-		public ActionChange(String action, int value, ActionService service) {
-			this.action = action;
-			this.value = value;
-			this.service = service;
-		}
-		@Override
-		public void run() {
-			service.action(action, value);
-		}
 		
-	}
-	private void schedule(ActionChange task, int delay) {
-		SimpleAsyncTaskExecutor scheduler = new SimpleAsyncTaskExecutor();
-		scheduler.execute(task,  delay );
-	}
-	
 }

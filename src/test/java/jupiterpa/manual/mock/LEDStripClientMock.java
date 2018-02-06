@@ -1,4 +1,4 @@
-package jupiterpa.manual.client;
+package jupiterpa.manual.mock;
 
 import java.util.ArrayList;
 import java.util.List;

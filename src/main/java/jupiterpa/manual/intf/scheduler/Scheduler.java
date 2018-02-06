@@ -14,7 +14,7 @@ import jupiterpa.infrastructure.client.HttpContext;
 import jupiterpa.infrastructure.config.ApplicationConfig;
 
 @Component
-@Profile("default")
+@Profile("!standalone")
 public class Scheduler {
 	@Autowired
 	ActionService service;

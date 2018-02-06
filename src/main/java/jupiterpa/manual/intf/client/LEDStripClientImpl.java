@@ -13,7 +13,7 @@ import jupiterpa.manual.domain.client.LEDStripClient;
 import jupiterpa.manual.domain.model.*;
 
 @Component
-@Profile("default")
+@Profile("!mock")
 public class LEDStripClientImpl extends ClientBase<LED> implements LEDStripClient {
     private static final Marker TECHNICAL = MarkerFactory.getMarker("TECHNICAL");
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());

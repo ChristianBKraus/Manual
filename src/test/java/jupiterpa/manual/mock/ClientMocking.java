@@ -1,4 +1,4 @@
-package jupiterpa.manual.client;
+package jupiterpa.manual.mock;
 
 public interface ClientMocking {
 	public void inject(Object obj);
