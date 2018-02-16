@@ -48,15 +48,15 @@ public class ActionService {
 		// Trigger / Reset on Entity
 		switch (inc) {
 			case 0: 
-				logger.info(TECHNICAL, "Reset on Action {}", action);
+				logger.info(TECHNICAL, "Reset on {}", action);
 			    action.reset();
 			    break;
 			case 1:
-  			    logger.info(TECHNICAL, "Trigger on Action {}", action);
+  			    logger.info(TECHNICAL, "Trigger on {}", action);
 			    action.trigger(1);
 			    break;
 			case -1:
-  			    logger.info(TECHNICAL, "Untrigger on Action {}", action);
+  			    logger.info(TECHNICAL, "Untrigger on {}", action);
 			    action.trigger(-1);
 			    break;
 		}
@@ -64,15 +64,21 @@ public class ActionService {
 		repo.save(action);
 		
 		// Transform
+		boolean success;
 		LED led = LedStripTransformer.transform(action);
-		// Client Call
-		boolean success = client.set(led);
+		if (led == null) {
+			logger.warn(TECHNICAL, "Transformation of {} failed");
+			success = false;
+		} else {
+		  // Client Call
+		  success = client.set(led);
+		}
 
 		// Update Health
 		if (success) 
-			health.setHealth(new HealthInfo("TemplateClient",true,"running"));
+			health.setHealth(new HealthInfo("TemplateClient",false,"running"));
 		else 
-			health.setHealth(new HealthInfo("TemplateClient",false,"down"));
+			health.setHealth(new HealthInfo("TemplateClient",true,"down"));
 		
 		return action;
 	}
